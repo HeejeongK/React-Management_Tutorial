@@ -20,38 +20,29 @@ const styles = theme => ({
   table: {
     minWidth: 1080
   }
-})
+});
 
 
-const customers = [
-  {
-  'id' : 1,
-  'img' : 'http://placeimg.com/64/64/1',
-  'name' : '홍길동',
-  'birthday' : '770707',
-  'gender' : '남자',
-  'job' : '학생'
-},
-{
-  'id' : 2,
-  'img' : 'http://placeimg.com/64/64/2',
-  'name' : '홍길길',
-  'birthday' : '770707',
-  'gender' : '남자',
-  'job' : '학생'
-},
-{
-  'id' : 3,
-  'img' : 'http://placeimg.com/64/64/3',
-  'name' : '홍동동',
-  'birthday' : '770707',
-  'gender' : '남자',
-  'job' : '학생'
-}
-]
 class App extends Component {  
+
+  state = {
+    customers: ""
+  } //변경가능할때 state사용
+
+  //api서버에 접근해서 데이터를 받아오는 등의 작업을 함 /라이브러리라생명주기존재
+  componemtDidMount() {
+    this.callApi()
+    .then(res => this.setState({customers: res}))
+    .catch(err => console.log(err));
+  }
+
+  callApi = async () =>{
+    const response = await fetch('/api/customers');
+    const body = await response.json();
+    return body;
+  }
    render() {
- const { classes } = this.props;
+ const { classes } = this.props; //props변경안될때
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
@@ -67,7 +58,7 @@ class App extends Component {
         </TableHead>
         <TableBody>
       {
-  customers.map(c => {
+   this.state.customers ? this.state.customers.map(c => {
     return(
       <Customer
       key={c.id}
@@ -79,7 +70,7 @@ class App extends Component {
       job={c.job}
       />
     );
-  })
+  }) : ""
 }
         </TableBody>
       </Table>
