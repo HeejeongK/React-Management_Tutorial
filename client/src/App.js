@@ -8,7 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles'
+//import createPalette from '@material-ui/core/styles/createPalette';
 
 
 const styles = theme => ({
@@ -19,6 +21,9 @@ const styles = theme => ({
   },
   table: {
     minWidth: 1080
+  },
+  progress: {
+    margin: theme.spacing.unit * 2
   }
 });
 
@@ -26,20 +31,29 @@ const styles = theme => ({
 class App extends Component {  
 
   state = {
-    customers: ""
+    customers: "",
+    completed: 0
   } //변경가능할때 state사용
 
   //api서버에 접근해서 데이터를 받아오는 등의 작업을 함 /라이브러리라생명주기존재
   componemtDidMount() {
+    this.timer = setInterval(this.progress, 20); 
     this.callApi()
     .then(res => this.setState({customers: res}))
     .catch(err => console.log(err));
   }
 
-  callApi = async () =>{
+  callApi = async ()=>{
+ 
     const response = await fetch('/api/customers');
+    //console.log(response)
     const body = await response.json();
     return body;
+  }
+
+  progress = () => {
+    const { completed } = this.state;
+    this.setState({ completed: completed >= 100 ? 0 : completed + 1});
   }
    render() {
  const { classes } = this.props; //props변경안될때
@@ -57,8 +71,9 @@ class App extends Component {
           </TableRow>
         </TableHead>
         <TableBody>
-      {
-   this.state.customers ? this.state.customers.map(c => {
+
+
+      { this.state.customers ? this.state.customers.map(c => {
     return(
       <Customer
       key={c.id}
@@ -70,7 +85,13 @@ class App extends Component {
       job={c.job}
       />
     );
-  }) : ""
+  }) : 
+  <TableRow>
+  <TableCell colSpan="6" align="center">
+   {<CircularProgress 
+   className={classes.progress} varient= "determinate" value={this.state.completed}/>  }
+    </TableCell>    
+  </TableRow>
 }
         </TableBody>
       </Table>
