@@ -36,7 +36,7 @@ class App extends Component {
   } //변경가능할때 state사용
 
   //api서버에 접근해서 데이터를 받아오는 등의 작업을 함 /라이브러리라생명주기존재
-  componemtDidMount() {
+  componentDidMount() {
     this.timer = setInterval(this.progress, 20); 
     this.callApi()
     .then(res => this.setState({customers: res}))
