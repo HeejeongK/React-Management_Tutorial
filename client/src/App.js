@@ -46,8 +46,9 @@ class App extends Component {
   callApi = async ()=>{
  
     const response = await fetch('/api/customers');
-    //console.log(response)
+  
     const body = await response.json();
+    console.log(body)
     return body;
   }
 
@@ -79,7 +80,7 @@ class App extends Component {
       key={c.id}
       id={c.id}
       image={c.img}
-      name={c.name}
+      name={c.NAME}
       birthday={c.birthday}
       gender={c.gender}
       job={c.job}
