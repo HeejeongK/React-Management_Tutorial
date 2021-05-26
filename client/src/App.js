@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Customer from './components/Customer';
+import CustomerAdd from './components/CustomerAdd';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -30,10 +31,25 @@ const styles = theme => ({
 
 class App extends Component {  
 
-  state = {
-    customers: "",
-    completed: 0
-  } //변경가능할때 state사용
+  //생성자 이용해서 처리
+ constructor(props){
+   super(props);
+   this.state = {
+     customers: '',
+     completed:0
+   }
+ }
+ //state를 초기화 해주기
+ stateRefresh = () => {
+   this.setState({
+     customers: '',
+     completed: 0
+   });
+   //고객데이터 새로 불러와야하기때문에
+   this.callApi()
+    .then(res => this.setState({customers: res}))
+    .catch(err => console.log(err));
+ }
 
   //api서버에 접근해서 데이터를 받아오는 등의 작업을 함 /라이브러리라생명주기존재
   componentDidMount() {
@@ -57,8 +73,9 @@ class App extends Component {
     this.setState({ completed: completed >= 100 ? 0 : completed + 1});
   }
    render() {
- const { classes } = this.props; //props변경안될때
+ const { classes } = this.props; //props변경안될때 
   return (
+    <div>
     <Paper className={classes.root}>
       <Table className={classes.table}>
         <TableHead>
@@ -79,7 +96,7 @@ class App extends Component {
       <Customer
       key={c.id}
       id={c.id}
-      image={c.img}
+      image={c.image}
       name={c.NAME}
       birthday={c.birthday}
       gender={c.gender}
@@ -97,6 +114,9 @@ class App extends Component {
         </TableBody>
       </Table>
     </Paper>
+    <CustomerAdd stateRefresh={this.stateRefresh}/>
+    
+    </div>
 
   );
 }
