@@ -25,7 +25,7 @@ const upload = multer({dest: './upload'})
 
 app.get('/api/customers', (req, res) => {
    connection.query(
-       "SELECT * FROM CUSTOMER",
+       "SELECT * FROM CUSTOMER WHERE inDeleted = 0",
        (err, rows, fields) => {
            res.send(rows);
        }
@@ -39,7 +39,7 @@ app.get('/api/customers', (req, res) => {
 app.use('/image', express.static('./upload'));
 
 app.post('/api/customers', upload.single('image'), (req,res) => {
-    let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+    let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(),0)';
     let image =  'http://localhost:5000/image/' + req.file.filename;
    // let image = req.file.filename;
     let name = req.body.name;
@@ -55,5 +55,13 @@ app.post('/api/customers', upload.single('image'), (req,res) => {
         });
 })
 
+app.delete('/api/customers/:id', (req,res) => {
+    let sql = 'UPDATE CUSTOMER SET inDeleted = 1 WHERE id = ?';
+    let params = [req.params.id];
+    connection.query(sql, params, //param 이었음 그런데 혹시몰라params로바꿈
+        (err, row, fields) => {
+            res.send(row); //rows를 row로 고쳤더니 에러가 안나네 
+        })
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
